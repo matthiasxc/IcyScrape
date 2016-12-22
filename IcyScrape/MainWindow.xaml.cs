@@ -1,4 +1,5 @@
-﻿using System;
+﻿using IcyScrape.Services;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -23,6 +24,8 @@ namespace IcyScrape
         public MainWindow()
         {
             InitializeComponent();
+
+            var examples = IcyScraperService.GetDeckSummaries("http://www.icy-veins.com/hearthstone/hunter-standard-decks");
         }
     }
 }
