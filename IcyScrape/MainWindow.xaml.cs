@@ -1,4 +1,5 @@
 ﻿using IcyScrape.Services;
+using IcyScrape.ViewModels;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -24,8 +25,14 @@ namespace IcyScrape
         public MainWindow()
         {
             InitializeComponent();
+            MainViewModel _mvm = new MainViewModel();
 
-            var examples = IcyScraperService.GetDeckSummaries("http://www.icy-veins.com/hearthstone/hunter-standard-decks");
+            //_mvm.AllDecks = IcyScraperService.GetStandardDecks(new DateTime(2016, 8, 31), 19000);
+            _mvm.AllDecks = IcyScraperService.GetWildDecks(new DateTime(2016, 8, 31), 19000);
+
+            _mvm.CalculateCardSet();
+            _mvm.WriteCardDataOut();
+
         }
     }
 }

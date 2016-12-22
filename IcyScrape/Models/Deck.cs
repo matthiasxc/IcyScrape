@@ -21,6 +21,7 @@ namespace IcyScrape.Models
         public List<Card> ClassCards { get; set; }
         public List<Card> NeutralCards { get; set;  }
         public int DustCost { get; set; }
+        public Class Class { get; set; }
 
         public void SetModified(string modified)
         {
@@ -72,6 +73,7 @@ namespace IcyScrape.Models
                     break;
                 default:
                     Name = "Classic";
+                    IsStandard = true;
                     break;
 
             }
@@ -87,13 +89,13 @@ namespace IcyScrape.Models
     {
         public Card()
         {
-            Count = 1;
+            CardClass = Class.Neutral;
         }
         public string Name { get; set; }
         public string ImageUrl { get; set; }
-        public int Count { get; set; }
         public Expansion Expansion { get; set; }
         public Class CardClass {get; set;}
+        public int CardCost { get; set; }
 
         //<li>
         //  2x
