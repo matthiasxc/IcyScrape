@@ -56,7 +56,7 @@ namespace IcyScrape.Models
                     IsStandard = true;
                     break;
                 case "LoE":
-                    Name = "The League of Exporers";
+                    Name = "The League of Explorers";
                     IsStandard = true;
                     break;
                 case "BrM":
@@ -64,10 +64,10 @@ namespace IcyScrape.Models
                     IsStandard = true;
                     break;
                 case "Kara":
-                    Name = "One Night in Karaxhan";
+                    Name = "One Night in Karazhan";
                     IsStandard = true;
                     break;
-                case "Naax":
+                case "Naxx":
                     Name = "Curse of Naxxramas";
                     IsStandard = false;
                     break;

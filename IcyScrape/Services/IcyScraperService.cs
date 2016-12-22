@@ -63,6 +63,8 @@ namespace IcyScrape.Services
                 listOfDecks[i] = GetDeck(listOfDecks[i]);
             }
 
+            
+
             var limitedDecks = listOfDecks.Where(d => d.LastModified > dateLimit).ToList();
 
             return listOfDecks;
@@ -182,10 +184,12 @@ namespace IcyScrape.Services
 
                     thisCard.Name = card.ChildNodes[1].InnerText;
 
+                    thisCard.ImageUrl = card.ChildNodes[1].GetAttributeValue("data-tooltip-href", "");
                     if (card.ChildNodes.Count > 3)
                         thisCard.Expansion = new Expansion(card.ChildNodes[3].InnerText);
                     else
                         thisCard.Expansion = new Expansion("none");
+
 
                     if (listNum == 0)
                     {
@@ -205,6 +209,26 @@ namespace IcyScrape.Services
             deckShell.NeutralCards = neutralCards;
 
             return deckShell;
+        }
+
+        public static string GetCardImageUrl(string baseUrl)
+        {
+            string returnUrl = "";
+
+            //< img 
+            //  class="hscard-static" src="http://media-Hearth.cursecdn.com/avatars/148/17/364.png"
+
+            // 1) get the document
+            var pageHtml = new HtmlAgilityPack.HtmlDocument();
+            pageHtml.LoadHtml(new WebClient().DownloadString(baseUrl));
+
+            var root = pageHtml.DocumentNode;
+            var cardImageNode = root.Descendants().Where(n => n.GetAttributeValue("class", "").Equals("hscard-static")).FirstOrDefault();
+
+            returnUrl = cardImageNode.GetAttributeValue("src", "");
+
+            return returnUrl;
+
         }
     }
 }

@@ -1,12 +1,17 @@
 ﻿using IcyScrape.Models;
+using IcyScrape.Services;
 using IcyScrape.Utilities;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
+using System.Net;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using System.Windows.Forms;
 
 namespace IcyScrape.ViewModels
 {
@@ -38,6 +43,19 @@ namespace IcyScrape.ViewModels
             {
                 _allCards = value;
                 NotifyPropertyChanged("AllCards");
+            }
+        }
+        #endregion
+
+        #region OutputFolder (string)
+        private string _outputFolder = "";
+        public string OutputFolder
+        {
+            get { return _outputFolder; }
+            set
+            {
+                _outputFolder = value;
+                NotifyPropertyChanged("OutputFolder");
             }
         }
         #endregion
@@ -83,8 +101,53 @@ namespace IcyScrape.ViewModels
             
         }
 
+        public void DownloadCardImages()
+        {
+            string dataDirectory = "";
+            using (FolderBrowserDialog dlg = new FolderBrowserDialog())
+            {
+                dlg.ShowNewFolderButton = true;
+                DialogResult result = dlg.ShowDialog();
+                if (result == System.Windows.Forms.DialogResult.OK)
+                {
+                    dataDirectory = dlg.SelectedPath;
+                }
+            }
+
+            foreach (CardReport cr in AllCards)
+                cr.HearthstoneCard.ImageUrl = IcyScraperService.GetCardImageUrl(cr.HearthstoneCard.ImageUrl);
+
+
+            using (WebClient wc = new WebClient())
+            {
+                foreach (CardReport cr in AllCards)
+                {
+                    byte[] data;
+                    data = wc.DownloadData(cr.HearthstoneCard.ImageUrl);                     
+                    File.WriteAllBytes(@"C:\Users\BigBox\Desktop\Hearthstone Cards\" + GenerateSlug(cr.HearthstoneCard.Name) + ".png", data);
+                    System.Threading.Thread.Sleep(500);
+                }
+                    
+            }
+
+
+        }
+        private static string GenerateSlug(string phrase)
+        {
+            string str = phrase;
+            // invalid chars           
+            str = Regex.Replace(str, @"[^a-z0-9\s-]", "");
+            // convert multiple spaces into one space   
+            str = Regex.Replace(str, @"\s+", " ").Trim();
+            // cut and trim 
+            str = str.Substring(0, str.Length <= 45 ? str.Length : 45).Trim();
+            str = Regex.Replace(str, @"\s", "-"); // hyphens   
+            return str;
+        }
+
         public void WriteCardDataOut()
         {
+
             Microsoft.Win32.OpenFileDialog dlg = new Microsoft.Win32.OpenFileDialog();
 
             // Set filter for file extension and default file extension 
@@ -96,7 +159,6 @@ namespace IcyScrape.ViewModels
             Nullable<bool> result = dlg.ShowDialog();
 
             string selectedFile = "";
-            // Get the selected file name and display in a TextBox 
             if (result == true)
             {
                 // Open document 
@@ -120,7 +182,7 @@ namespace IcyScrape.ViewModels
                         row.Add(cr.HearthstoneCard.CardClass.ToString());
                         row.Add(cr.HearthstoneCard.Expansion.Name);
                         row.Add(cr.CardCount.ToString());
-                        foreach(Deck d in cr.DecksWithCard)
+                        foreach (Deck d in cr.DecksWithCard)
                         {
                             row.Add(d.Class + " - " + d.Name);
                         }
@@ -128,6 +190,7 @@ namespace IcyScrape.ViewModels
                     }
                 }
             }
+            
         }
 
         public event PropertyChangedEventHandler PropertyChanged;
