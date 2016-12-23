@@ -32,17 +32,10 @@ namespace IcyScrape
             
             MainViewModel _mvm = new MainViewModel();
 
-            byte[] data;
-            using(WebClient client = new WebClient())
-            {
-                data = client.DownloadData("http://media-Hearth.cursecdn.com/avatars/148/97/548.png");
-            }
-            File.WriteAllBytes(@"C:\Users\BigBox\Desktop\Hearthstone Cards\xyz.png", data);
 
 
-
-            _mvm.AllDecks = IcyScraperService.GetStandardDecks(new DateTime(2016, 8, 31), 19000);
-            //_mvm.AllDecks = IcyScraperService.GetWildDecks(new DateTime(2016, 8, 31), 19000);
+            //_mvm.AllDecks = IcyScraperService.GetStandardDecks(new DateTime(2016, 8, 31), 19000);
+            _mvm.AllDecks = IcyScraperService.GetWildDecks(new DateTime(2016, 8, 31), 19000);
 
             _mvm.CalculateCardSet();
             _mvm.WriteCardDataOut();
