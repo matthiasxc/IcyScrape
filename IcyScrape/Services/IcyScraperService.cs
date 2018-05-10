@@ -3,6 +3,7 @@ using IcyScrape.Helpers;
 using IcyScrape.Models;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Net;
 using System.Text;
@@ -15,11 +16,11 @@ namespace IcyScrape.Services
 
 
 
-        public static List<Deck> GetStandardDecks(DateTime dateLimit, int dustLimit)
+        public static ObservableCollection<Deck> GetStandardDecks(DateTime dateLimit, int dustLimit)
         {
             var standardSources = Sources.GetStandardSources();
             
-            List<Deck> listOfDecks = new List<Deck>();
+            ObservableCollection<Deck> listOfDecks = new ObservableCollection<Deck>();
 
             // Go through all the classes source by source & get the deck list
             foreach(KeyValuePair<string, Class> kvp in standardSources)
@@ -38,15 +39,20 @@ namespace IcyScrape.Services
 
             //return listOfDecks;
             var limitedDecks = listOfDecks.Where(d => d.LastModified > dateLimit).ToList();
-            
-            return limitedDecks;
+
+            ObservableCollection<Deck> limitedDecksObservable = new ObservableCollection<Deck>();
+            foreach (Deck d in limitedDecks)
+            {
+                limitedDecksObservable.Add(d);
+            }
+            return limitedDecksObservable;
         }
 
-        public static List<Deck> GetWildDecks(DateTime dateLimit, int dustLimit)
+        public static ObservableCollection<Deck> GetWildDecks(DateTime dateLimit, int dustLimit)
         {
             var wildSources = Sources.GetWildSources();
 
-            List<Deck> listOfDecks = new List<Deck>();
+            ObservableCollection<Deck> listOfDecks = new ObservableCollection<Deck>();
 
             // Go through all the classes source by source & get the deck list
             foreach (KeyValuePair<string, Class> kvp in wildSources)
@@ -97,9 +103,9 @@ namespace IcyScrape.Services
                     Deck thisDeck = new Deck();
 
                     // Get deck name, URL, expansion info
-                    var deckInfo = node.Descendants().Where(n => n.GetAttributeValue("class", "").Equals("deck_presentation_name")).Single();
+                    var deckInfo = node.Descendants().Where(n => n.GetAttributeValue("class", "").Equals("deck_presentation_title")).Single();
                     thisDeck.Name = deckInfo.Descendants("a").Single().InnerText;
-                    thisDeck.Url = deckInfo.Descendants("a").Single().Attributes["href"].Value;
+                    thisDeck.Url = "http:" + deckInfo.Descendants("a").Single().Attributes["href"].Value;
                     var deckExpansions = node.Descendants("span").Where(n => n.GetAttributeValue("class", "").Equals("expansion_marker"));
 
                     List<string> expansions = new List<string>();
@@ -183,8 +189,8 @@ namespace IcyScrape.Services
                         thisCard.CardCost = 1600;
 
                     thisCard.Name = card.ChildNodes[1].InnerText;
-
-                    thisCard.ImageUrl = card.ChildNodes[1].GetAttributeValue("data-tooltip-href", "");
+                    // https://static.icy-veins.com/images/hearthstone/73327-lesser-jasper-spellstone-small.png
+                    thisCard.ImageUrl = "http://static.icy-veins.com/images/hearthstone/" +  card.ChildNodes[1].GetAttributeValue("data-hearthstone-tooltip", "");
                     if (card.ChildNodes.Count > 3)
                         thisCard.Expansion = new Expansion(card.ChildNodes[3].InnerText);
                     else
@@ -213,19 +219,19 @@ namespace IcyScrape.Services
 
         public static string GetCardImageUrl(string baseUrl)
         {
-            string returnUrl = "";
+            string returnUrl = baseUrl + ".png";
 
             //< img 
             //  class="hscard-static" src="http://media-Hearth.cursecdn.com/avatars/148/17/364.png"
 
             // 1) get the document
-            var pageHtml = new HtmlAgilityPack.HtmlDocument();
-            pageHtml.LoadHtml(new WebClient().DownloadString(baseUrl));
+            //var pageHtml = new HtmlAgilityPack.HtmlDocument();
+            //pageHtml.LoadHtml(new WebClient().DownloadString(baseUrl));
 
-            var root = pageHtml.DocumentNode;
-            var cardImageNode = root.Descendants().Where(n => n.GetAttributeValue("class", "").Equals("hscard-static")).FirstOrDefault();
+            //var root = pageHtml.DocumentNode;
+            //var cardImageNode = root.Descendants().Where(n => n.GetAttributeValue("class", "").Equals("hscard-static")).FirstOrDefault();
 
-            returnUrl = cardImageNode.GetAttributeValue("src", "");
+            //returnUrl = cardImageNode.GetAttributeValue("src", "");
 
             return returnUrl;
 

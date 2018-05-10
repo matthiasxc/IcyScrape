@@ -32,15 +32,30 @@ namespace IcyScrape
             
             MainViewModel _mvm = new MainViewModel();
 
+            this.DataContext = _mvm;
 
+            ////_mvm.AllDecks = IcyScraperService.GetStandardDecks(new DateTime(2016, 8, 31), 19000);
+            //_mvm.AllDecks = IcyScraperService.GetWildDecks(new DateTime(2016, 8, 31), 19000);
 
-            //_mvm.AllDecks = IcyScraperService.GetStandardDecks(new DateTime(2016, 8, 31), 19000);
-            _mvm.AllDecks = IcyScraperService.GetWildDecks(new DateTime(2016, 8, 31), 19000);
+            //_mvm.CalculateCardSet();
+            //_mvm.WriteCardDataOut();
+            //_mvm.DownloadCardImages();
 
+        }
+
+        private void Button_Click(object sender, RoutedEventArgs e)
+        {
+            MainViewModel _mvm = (MainViewModel)this.DataContext;
+            _mvm.Status = "Loading Decks...";
+            _mvm.AllDecks = IcyScraperService.GetStandardDecks(new DateTime(2018, 2, 01), 32000);
+            //_mvm.AllDecks = IcyScraperService.GetWildDecks(new DateTime(2016, 8, 31), 19000);
+            _mvm.Status = "Calculating Card Sets";
             _mvm.CalculateCardSet();
+            _mvm.Status = "Exporting Data";
             _mvm.WriteCardDataOut();
+            _mvm.Status = "Downloading images";
             _mvm.DownloadCardImages();
-
+            _mvm.Status = "Done";
         }
     }
 }

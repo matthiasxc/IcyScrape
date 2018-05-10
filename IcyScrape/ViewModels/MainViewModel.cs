@@ -3,6 +3,7 @@ using IcyScrape.Services;
 using IcyScrape.Utilities;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
@@ -22,8 +23,8 @@ namespace IcyScrape.ViewModels
         }
 
         #region AllDecks (List<Deck>)
-        private List<Deck> _allDecks = new List<Deck>();
-        public List<Deck> AllDecks
+        private ObservableCollection<Deck> _allDecks = new ObservableCollection<Deck>();
+        public ObservableCollection<Deck> AllDecks
         {
             get { return _allDecks; }
             set
@@ -60,6 +61,18 @@ namespace IcyScrape.ViewModels
         }
         #endregion
 
+        #region Status (string)
+        private string _status = "";
+        public string Status
+        {
+            get { return _status; }
+            set
+            {
+                _status= value;
+                NotifyPropertyChanged("Status");
+            }
+        }
+        #endregion
 
         public void CalculateCardSet()
         {

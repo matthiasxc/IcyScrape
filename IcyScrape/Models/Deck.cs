@@ -13,6 +13,10 @@ namespace IcyScrape.Models
             Expansions = new List<Expansion>();
         }
 
+        public override string ToString()
+        {
+            return Class.ToString() + " - " + Name;
+        }
         public string Url { get; set; } 
         public string Name { get; set; }
         public string LastModifiedString { get; set; }
@@ -27,8 +31,51 @@ namespace IcyScrape.Models
         {
             LastModifiedString = modified;
             // 2016/12/10
-            string[] splitDate = modified.Split(new char[] { '/' }, StringSplitOptions.RemoveEmptyEntries);
-            LastModified = new DateTime(Int32.Parse(splitDate[0]), Int32.Parse(splitDate[1]), Int32.Parse(splitDate[2]));             
+            string[] splitDate = modified.Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
+            int monthOutput = 1;
+            switch (splitDate[0].ToLower())
+            {
+                case "jan":
+                    monthOutput = 1;
+                    break;
+                case "feb":
+                    monthOutput = 2;
+                    break;
+                case "mar":
+                    monthOutput = 3;
+                    break;
+                case "apr" :
+                    monthOutput = 4;
+                    break;
+                case "may":
+                    monthOutput = 5;
+                    break;
+                case "jun":
+                    monthOutput = 6;
+                    break;
+                case "jul":
+                    monthOutput = 7;
+                    break;
+                case "aug":
+                    monthOutput = 8;
+                    break;
+                case "sep":
+                    monthOutput = 9;
+                    break;
+                case "oct":
+                    monthOutput = 10;
+                    break;
+                case "nov":
+                    monthOutput = 11;
+                    break;
+                case "dec":
+                    monthOutput = 12;
+                    break;
+                default:
+                    monthOutput = 1;
+                    break;
+            }
+            LastModified = new DateTime(Int32.Parse(splitDate[2]), monthOutput, Int32.Parse(splitDate[1]));             
         }
     }
 
@@ -45,31 +92,47 @@ namespace IcyScrape.Models
                     break;
                 case "TGT":
                     Name = "The Grand Tournament";
-                    IsStandard = true;
+                    IsStandard = false;
                     break;
                 case "MSG":
                     Name = "Mean Streets of Gadgetzan";
-                    IsStandard = true;
+                    IsStandard = false;
                     break;
                 case "TOG":
                     Name = "Whispers of the Old Gods";
-                    IsStandard = true;
+                    IsStandard = false;
                     break;
                 case "LoE":
                     Name = "The League of Explorers";
-                    IsStandard = true;
+                    IsStandard = false;
                     break;
                 case "BrM":
                     Name = "Blackrock Mountain";
-                    IsStandard = true;
+                    IsStandard = false;
                     break;
                 case "Kara":
                     Name = "One Night in Karazhan";
-                    IsStandard = true;
+                    IsStandard = false;
                     break;
                 case "Naxx":
                     Name = "Curse of Naxxramas";
                     IsStandard = false;
+                    break;
+                case "K&amp;C":
+                    Name = "Kobolds and Catacombs";
+                    IsStandard = true;
+                    break;
+                case "KFT":
+                    Name = "Knights of the Frozen Throne";
+                    IsStandard = true;
+                    break;
+                case "WW":
+                    Name = "The Witchood";
+                    IsStandard = true;
+                    break;
+                case "Un'Goro":
+                    Name = "Journey to Un'Goro";
+                    IsStandard = true;
                     break;
                 default:
                     Name = "Classic";
